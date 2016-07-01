@@ -26,7 +26,7 @@ here](http://www.tutorialspoint.com/computer_graphics/viewing_and_clipping.htm).
 
 For more details about the challenge, check out the post here:
 
-  http://RetroBattlestations.com
+  https://redd.it/4qs0f3
 
 ## Porting ##
 

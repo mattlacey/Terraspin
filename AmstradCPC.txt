@@ -1,6 +1,6 @@
 100 REM BASIC Challenge #6: Terraspin
 110 REM http://reddit.com/r/RetroBattlestations
-120 REM written by FozzTexx - BBC Micro port by FozzTexx
+120 REM written by FozzTexx - Amstrad CPC port by gschizas
 
 130 REM BBC BASIC has bitwise operators so much of the line clipping
 140 REM logic is simplified compared to the Apple II version.

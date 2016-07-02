@@ -51,6 +51,17 @@ operators. IBM BASIC is not one of those however.
 If you make a mistake and don't want to retype the entire line, most
 of the BASICs have a way to make corrections.
 
+### Amstrad CPC (464/664/6128/464+/6128+) ###
+
+  On Amstrad CPC, use AUTO to start typing commands. Use the arrow keys
+  to move about the line. Exit the AUTO mode py pressing Escape. You can
+  also start on a specific line by entering AUTO 100 (for line 100).
+
+  To go to the start or the end of the line use CONTROL+Arrow keys. You
+  can also use SHIFT+Arrow keys to use the copy cursor. This is a second
+  cursor that you move independendly, and will copy whatever is under it
+  to the main cursor when you press COPY.
+
 ### Apple II computers ###
 
   On an Apple II+ use LIST <line number> to print the line with an

@@ -19,7 +19,7 @@
 
 490 PRINT CHR$(12);
 
-500 REM == Command interpreter
+500 REM === Command interpreter
 510 IP = 1:SP = 0
 520 C$ = MID$(CM$, IP, 1)
 530 IF C$ = " " THEN IP = IP + 1:GOTO 520
@@ -36,11 +36,11 @@
 640 IF C$ <> " " THEN GOTO 610
 650 GOTO 520
 
-1000 REM == Push onto stack
+1000 REM === Push onto stack
 1010 SP = SP + 1:SK(SP) = V
 1020 RETURN
 
-1100 REM == Pop from stack
+1100 REM === Pop from stack
 1110 V = SK(SP):SP = SP - 1
 1120 RETURN
 
@@ -66,7 +66,7 @@
 1740 PRINT CHR$(14);" ";CHR$(15);
 1750 RETURN
 
-2000 REM == Loop instruction end
+2000 REM === Loop instruction end
 2010 GOSUB 1110:BP = V
 2020 GOSUB 1110:LR = V
 2030 LR = LR - 1
@@ -105,10 +105,10 @@
 4540 IF C1 = 0 AND C2 = 0 THEN GOSUB 1510:RETURN
 4550 IF C1 AND C2 THEN RETURN
 4560 C = C1:IF C = 0 THEN C = C2
-4570 IF C AND 1 THEN X = X1 + (X2 - X1) * (SH - Y1) / (Y2 - Y1):Y = SH:GOTO 4600
-4580 IF C AND 2 THEN X = X1 + (X2 - X1) * (0 - Y1) / (Y2 - Y1):Y = 0:GOTO 4600
-4590 IF C AND 4 THEN Y = Y1 + (Y2 - Y1) * (SW - X1) / (X2 - X1):X = SW:GOTO 4600
-4600 IF C AND 8 THEN Y = Y1 + (Y2 - Y1) * (0 - X1) / (X2 - X1):X = 0:GOTO 4600
+4570 IF C AND 1 THEN X = X1 + (X2 - X1) * (SH - Y1) / (Y2 - Y1):Y = SH:GOTO 4610
+4580 IF C AND 2 THEN X = X1 + (X2 - X1) * (0 - Y1) / (Y2 - Y1):Y = 0:GOTO 4610
+4590 IF C AND 4 THEN Y = Y1 + (Y2 - Y1) * (SW - X1) / (X2 - X1):X = SW:GOTO 4610
+4600 IF C AND 8 THEN Y = Y1 + (Y2 - Y1) * (0 - X1) / (X2 - X1):X = 0:GOTO 4610
 4610 IF C = C1 THEN X1 = X:Y1 = Y:GOTO 4630
 4620 X2 = X:Y2 = Y
 4630 GOTO 4520

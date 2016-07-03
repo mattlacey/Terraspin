@@ -23,7 +23,7 @@
 510 IP = 1:SP = 0
 520 C$ = MID$(CM$, IP, 1)
 530 IF C$ = " " THEN IP = IP + 1:GOTO 520
-540 IF C$ >= "-" AND C$ <= "9" THEN V = VAL(MID$(CM$, IP)):GOSUB 1010
+540 IF C$ >= "-" AND C$ <= "9" THEN V = VAL(MID$(CM$, IP)):GOSUB 1010:GOSUB 1210
 550 IF C$ = "(" THEN V = IP:GOSUB 1010
 560 IF C$ = ")" THEN GOSUB 2010
 570 IF C$ = "M" THEN GOSUB 2510
@@ -32,9 +32,7 @@
 600 IF C$ = "D" THEN GOSUB 4010
 610 IP = IP + 1
 620 IF IP > LEN(CM$) THEN END
-630 C$ = MID$(CM$, IP, 1)
-640 IF C$ <> " " THEN GOTO 610
-650 GOTO 520
+630 GOTO 520
 
 1000 REM === Push onto stack
 1010 SP = SP + 1:SK(SP) = V
@@ -43,6 +41,14 @@
 1100 REM === Pop from stack
 1110 V = SK(SP):SP = SP - 1
 1120 RETURN
+
+1200 REM === Skip over number
+1210 IP = IP + 1
+1220 IF IP > LEN(CM$) THEN END
+1230 C2$ = MID$(CM$, IP, 1)
+1240 IF C2$ >= "-" AND C2$ <= "9" THEN GOTO 1210
+1250 IP = IP - 1
+1260 RETURN
 
 1500 REM === Plot a line
 1510 X1% = X1:X2% = X2:Y1% = Y1:Y2% = Y2

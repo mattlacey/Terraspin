@@ -1,14 +1,15 @@
-100 REM BASIC Challenge #6: Terraspin
+100 REM BASIC Month: Terraspin
 110 REM http://reddit.com/r/RetroBattlestations
-120 REM written by FozzTexx - BBC Micro port by FozzTexx
+120 REM written by FozzTexx
+125 REM modifed for the TRS-80 Color Computer by swampyness
 
-130 REM BBC BASIC has bitwise operators so much of the line clipping
+130 REM CoCo BASIC has bitwise operators so much of the line clipping
 140 REM logic is simplified compared to the Apple II version.
 
 200 REM === Initialize variables
-210 SW = 1280:SH = 1024:XS = SW / 1000:YS = (SH * 4) / (1000 * 3)
+210 SW = 256:SH = 128:XS = SW / 1000:YS = (SH * 4) / (1000 * 3)
 220 SW = SW - 1:SH = SH - 1
-230 DIM SK(10)
+230 PI = 3.14159
 
 250 REM === Set turtle start at center of screen pointing up, pen up
 260 TX = 500:TY = SH / YS / 2:TA = 90:TP = 0
@@ -16,7 +17,7 @@
 300 REM === Get command to execute
 310 CM$="5 ( D 12 ( 210 M 5 ( 30 T 10 M ) ) U 100 T 150 M )"
 
-490 MODE 1
+490 PMODE 3,1:SCREEN 1,0:PCLS 0:COLOR 1
 
 500 REM === Command interpreter
 510 IP = 1:SP = 0
@@ -30,7 +31,7 @@
 590 IF C$ = "U" THEN GOSUB 3510
 600 IF C$ = "D" THEN GOSUB 4010
 610 IP = IP + 1
-620 IF IP > LEN(CM$) THEN END
+620 IF IP > LEN(CM$) THEN 7010
 630 GOTO 520
 
 1000 REM === Push onto stack
@@ -50,7 +51,7 @@
 1260 RETURN
 
 1500 REM === Plot a line
-1510 MOVE X1,SH - Y1:DRAW X2,SH - Y2
+1510 LINE(X1,Y1)-(X2,Y2),PSET
 1520 RETURN
 
 2000 REM === Loop instruction end
@@ -107,3 +108,6 @@
 5040 IF X > SW THEN C = C OR 4
 5050 IF X < 0 THEN C = C OR 8
 5060 RETURN
+
+7000 REM ==== Preview
+7010 GOTO 7010

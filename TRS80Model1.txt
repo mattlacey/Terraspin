@@ -44,7 +44,7 @@
 
 1200 REM === Skip over number
 1210 IP = IP + 1
-1220 IF IP > LEN(CM$) THEN END
+1220 IF IP > LEN(CM$) THEN 1250
 1230 C2$ = MID$(CM$, IP, 1)
 1240 IF C2$ >= "-" AND C2$ <= "9" THEN GOTO 1210
 1250 IP = IP - 1

@@ -1,0 +1,283 @@
+' BASIC Challenge #6: Terraspin
+' http://reddit.com/r/RetroBattlestations
+' written by FozzTexx - Atari ST GFA port by LaceySnr
+CLS
+' Resolution detection
+SELECT XBIOS(4)
+CASE 0
+  COLOR 4
+  width%=320
+  height%=200
+CASE 1
+  COLOR 2
+  width%=640
+  height%=200
+CASE 2
+  COLOR 1
+  width%=640
+  height%=400
+ENDSELECT
+PRINT width%,height%
+' INPUT wait$
+' Calculate step sizes
+xs=width%/1000
+ys=(height%*4)/(1000*3)
+width=width%-1
+height=height%-1
+pi=3.14159
+' initial position and heading
+tx=500
+ty=500
+ta=90
+tp=1
+tc=1
+COLOR 1
+' Comands to execute
+cm$="5 ( D 12 ( 1 C 210 M 5 ( 30 T 10 M ) ) U 100 T 150 M )"
+' cm$="60 (6 T 1 C 4 ( 100 M 90 T )) "
+CLS
+' Interpreter: instruction pointer, stack pointer, stack
+ip=1
+sp=0
+DIM sk(10000)
+'
+getcommand:
+c$=MID$(cm$,ip,1)
+SELECT c$
+CASE "("
+  v=ip
+  GOSUB pushstack
+CASE ")"
+  GOSUB doloop
+CASE "-" TO "9"
+  v=VAL(MID$(cm$,ip))
+  GOSUB pushstack
+  GOSUB skipnumber
+CASE "M"
+  GOSUB move
+CASE "T"
+  GOSUB turn
+CASE "U"
+  GOSUB penup
+CASE "D"
+  GOSUB pendown
+CASE "C"
+  GOSUB changecol
+ENDSELECT
+ip=ip+1
+IF ip>LEN(cm$)
+  GOTO finished
+ENDIF
+GOTO getcommand
+finished:
+PRINT "Greetz /r/retrobattlestations"
+PRINT "/u/LaceySnr - 8th July, 2016"
+END
+'
+PROCEDURE pushstack
+  sk(sp)=v
+  sp=sp+1
+RETURN
+'
+PROCEDURE popstack
+  sp=sp-1
+  v=sk(sp)
+RETURN
+'
+PROCEDURE skipnumber
+sn_loop:
+  ip=ip+1
+  IF ip>LEN(cm$) THEN
+    GOTO sn_done
+  ENDIF
+  c2$=MID$(cm$,ip,1)
+  IF c2$>="-" AND c2$<="9"
+    GOTO sn_loop
+  ENDIF
+sn_done:
+  ip=ip-1
+RETURN
+'
+PROCEDURE doloop
+  GOSUB popstack
+  bp=v
+  GOSUB popstack
+  lr=v
+  lr=lr-1
+  IF lr<1
+    GOTO lb_done
+  ENDIF
+  v=lr
+  GOSUB pushstack
+  v=bp
+  GOSUB pushstack
+  ip=bp
+lb_done:
+RETURN
+'
+PROCEDURE changecol
+  GOSUB popstack
+  tc=AND(tc+v,15)
+  IF tc=0
+    tc=tc+v
+  ENDIF
+  COLOR tc
+RETURN
+'
+PROCEDURE move
+  GOSUB popstack
+  lx=v*COS((360-ta)*PI/180)
+  ly=v*SIN((360-ta)*PI/180)
+  IF tp>0 THEN
+    x1=tx
+    y1=ty
+    x2=x1+lx
+    y2=y1+ly
+    GOSUB drawline
+  ENDIF
+  tx=tx+lx
+  ty=ty+ly
+RETURN
+'
+PROCEDURE turn
+  GOSUB popstack
+  ta=ta+v
+turn_left:
+  IF ta<0 THEN
+    ta=ta+360
+    GOTO turn_left
+  ENDIF
+turn_right:
+  IF ta>360 THEN
+    ta=ta-360
+    GOTO turn_right
+  ENDIF
+RETURN
+'
+PROCEDURE penup
+  tp=0
+RETURN
+'
+PROCEDURE pendown
+  tp=1
+RETURN
+'
+PROCEDURE drawline
+  x1=x1*xs
+  x2=x2*xs
+  y1=y1*ys
+  y2=y2*ys
+dl_loop:
+  x=x1
+  y=y1
+  GOSUB calcregioncode
+  c1=c
+  x=x2
+  y=y2
+  GOSUB calcregioncode
+  c2=c
+  IF c1=0 AND c2=0 THEN
+    GOSUB plotline
+    GOTO dl_done
+  ENDIF
+  IF AND(c1,c2) THEN
+    GOTO dl_done
+  ENDIF
+  c=c1
+  IF c=0
+    c=c2
+  ENDIF
+  IF AND(c,1) THEN
+    x=x1+(x2-x1)*(height-y1)/(y2-y1)
+    y=height
+    GOTO dl_checkend
+  ENDIF
+  IF AND(c,2) THEN
+    x=x1+(x2-x1)*(0-y1)/(y2-y1)
+    y=0
+    GOTO dl_checkend
+  ENDIF
+  IF AND(c,4) THEN
+    y=y1+(y2-y1)*(width-x1)/(x2-x1)
+    x=width
+    GOTO dl_checkend
+  ENDIF
+  IF AND(c,8) THEN
+    y=y1+(y2-y1)*(0-x1)/(x2-x1)
+    x=0
+  ENDIF
+dl_checkend:
+  IF c=c1 THEN
+    x1=x
+    y1=y
+    GOTO dl_loop
+  ENDIF
+  x2=x
+  y2=y
+  GOTO dl_loop
+dl_done:
+RETURN
+'
+PROCEDURE calcregioncode
+  c=0
+  IF y>height
+    c=1
+  ENDIF
+  IF y<0
+    c=2
+  ENDIF
+  IF x>width
+    c=OR(c,4)
+  ENDIF
+  IF x<0
+    c=OR(c,8)
+  ENDIF
+RETURN
+'
+PROCEDURE plotline
+  x1%=x1
+  x2%=x2
+  y1%=y1
+  y2%=y2
+  dx%=ABS(x2%-x1%)
+  sx%=-1
+  IF x1%<x2%
+    sx%=1
+  ENDIF
+  dy%=ABS(y2%-y1%)
+  sy%=-1
+  IF y1%<y2%
+    sy%=1
+  ENDIF
+  er%=-dy%
+  IF dx%>dy%
+    er%=dx%
+  ENDIF
+  er%=er%/2
+pl_plot:
+  GOSUB plot
+  IF x1%=x2% AND y1%=y2%
+    GOTO pl_done
+  ENDIF
+  e2%=er%
+  IF e2%>-dx%
+    er%=er%-dy%
+    x1%=x1%+sx%
+  ENDIF
+  IF x1%=x2% AND y1%=y2%
+    GOTO pl_done
+  ENDIF
+  IF e2%<dy%
+    er%=er%+dx%
+    y1%=y1%+sy%
+  ENDIF
+  IF x1%=x2% AND y1%=y2%
+    GOTO pl_done
+  ENDIF
+  GOTO pl_plot
+pl_done:
+RETURN
+'
+PROCEDURE plot
+  PLOT x1%,y1%
+RETURN
